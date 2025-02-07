@@ -1,0 +1,14 @@
+{
+  "name": "dev-gram",
+  "version": "1.0.0",
+  "description": "Dev-gram",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Anurag",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
