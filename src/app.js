@@ -3,8 +3,10 @@ const connectDB = require("./config/database");
 const app = express();
 const User = require("./models/user");
 const { validateSignUpDetails } = require("./utils/validations");
+const { userAuthMiddleware } = require("./middlewares/auth");
 const bcrpypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 
 const PORT = 7777;
 
@@ -15,11 +17,8 @@ app.use(cookieParser());
 app.post("/signup", async (req, res) => {
   try {
     validateSignUpDetails(req);
-    const password = req.body.password;
-    const hashedPassword = await bcrpypt.hash(password, 10);
     const userDetails = new User({
-      ...req.body,
-      password: hashedPassword,
+      ...req.body
     });
     await userDetails.save();
     res.status(201).send(userDetails);
@@ -36,9 +35,12 @@ app.post("/login", async (req, res) => {
     if (!userDetails) {
       throw new Error("Invalid email or password");
     }
-    const isMatch = await bcrpypt.compare(password, userDetails.password);
+    const isMatch = await userDetails.checkPassword(password);
     if (!isMatch) {
       throw new Error("Invalid email or password");
+    } else {
+       const token = await userDetails.getJwtToken();
+       res.cookie("token", token, { maxAge: 7 * 24 * 60 * 60 * 1000 });
     }
     res.status(200).send(userDetails);
   } catch (error) {
@@ -57,16 +59,12 @@ app.get("/user", async (req, res) => {
   } catch (error) {}
 });
 
-app.get("/user/:userId", async (req, res) => {
+app.get("/profile", userAuthMiddleware, async (req, res) => {
   try {
-    const userId = req.params.userId;
-    const user = await User.findById(userId);
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = req.user;
     res.status(200).send(user);
   } catch (error) {
-    res.status.send(error.message);
+    res.status(400).send(error.message);
   }
 });
 
@@ -96,8 +94,8 @@ app.patch("/user/:userId", async (req, res) => {
       return res.status(400).send({ error: "Skills must be less than 10" });
     }
     const user = await User.findByIdAndUpdate(userId, updatedData, {
-      new: true,
-      runValidators: true,
+      new: true, // By default, it is false. It will return the old data.
+      runValidators: true, // By default, it is false. It will not run the validators on the updated data.
     });
     if (!user) {
       return res.status(404).send("User not found");
