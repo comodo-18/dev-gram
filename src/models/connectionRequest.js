@@ -24,6 +24,8 @@ const connecttionRequestSchema = new Schema(
   { timestamps: true }
 );
 
+connecttionRequestSchema.index({ senderId: 1, receiverId: 1 }, { unique: true });
+
 connecttionRequestSchema.pre("save", async function (next) {
   const connectionRequest = this;
   if (connectionRequest.isModified("status")) {
@@ -31,7 +33,7 @@ connecttionRequestSchema.pre("save", async function (next) {
       throw new Error("Invalid status value");
     }
   }
-    if (connectionRequest.senderId === connectionRequest.receiverId) {
+    if (connectionRequest.senderId.equals(connectionRequest.receiverId)) {
         throw new Error("Sender and receiver cannot be the same");
     }
   next();
