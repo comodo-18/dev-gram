@@ -19,7 +19,7 @@ profileRouter.get("/getAllProfiles", async (req, res) => {
   } catch (error) {}
 });
 
-profileRouter.get("/getSingleProfile", userAuthMiddleware, async (req, res) => {
+profileRouter.get("/profile/view", userAuthMiddleware, async (req, res) => {
   try {
     const user = req.user;
     res.status(200).send(user);
