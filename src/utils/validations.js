@@ -1,7 +1,7 @@
 const validator = require("validator");
 
 const validateSignUpDetails = (req) => {
-  const { firstName, email, password } = req.body;
+  const { firstName, email, password, age, gender } = req.body;
   const errors = [];
 
   if (!firstName || typeof firstName !== "string" || firstName.trim() === "") {
@@ -16,6 +16,13 @@ const validateSignUpDetails = (req) => {
     validator.isStrongPassword(password, { minLength: 6 }) === false
   ) {
     errors.push("Password is required and must be at least 6 characters long.");
+  }
+  if (!age || typeof age !== "number" || age < 18) {
+    errors.push("Age is required and must be at least 18.");
+  }
+  console.log("Validating gender:", gender); // Debug log
+  if (!gender || !["male", "female", "others"].includes(gender)) {
+    errors.push("Gender is required and must be 'male', 'female', or 'others'.");
   }
   if (errors.length > 0) {
     throw new Error(errors.join(" "));

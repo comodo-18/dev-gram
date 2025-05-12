@@ -16,7 +16,7 @@ const SAFE_DATA = [
 
 // api to get all connection requests with status as interested
 userRouter.get(
-  "/user/getInterestedConectionRequests",
+  "/user/getInterestedConnectionRequests",
   userAuthMiddleware,
   async (req, res) => {
     try {
@@ -28,12 +28,9 @@ userRouter.get(
       if (!allRequests) {
         return res.status(404).send("No connection requests found");
       }
-      const allRequestsData = allRequests.map((request) => {
-        request.receiverId;
-      });
       res.status(200).json({
         message: `All connections of ${req.user.firstName} ${req.user.lastName}`,
-        allRequestsData,
+        allRequests,
       });
     } catch (error) {
       res.status(400).send(error.message);
@@ -85,28 +82,32 @@ userRouter.get("/user/feed", userAuthMiddleware, async (req, res) => {
     limit = limit > 50 ? 50 : limit; // limit the number of users to 50
     const skip = (page - 1) * limit;
     const loggedInUserId = req.user._id;
-    const hideenUsersFromFeed = await connectionRequest.find({
+
+    const hideenUsersFromFeed = await ConnectionRequest.find({
       $or: [{ senderId: loggedInUserId }, { receiverId: loggedInUserId }],
     });
-    const uniqueIds = new set();
+
+    const uniqueIds = new Set();
     hideenUsersFromFeed.forEach((user) => {
       uniqueIds.add(user.senderId.toString());
       uniqueIds.add(user.receiverId.toString());
     });
     uniqueIds.add(loggedInUserId.toString()); // add logged in user id to the set
+
     const allusersOnFeed = await user
       .find({
-        _id: { $nin: Array.from(uniqueIds) }
+        _id: { $nin: Array.from(uniqueIds) },
       })
       .select(SAFE_DATA)
       .skip(skip)
       .limit(limit);
 
-    res.status(200).json({
+    return res.status(200).json({
       allusersOnFeed,
     });
   } catch (error) {
-    res.status(400).send(error.message);
+    // console.error("Error in /user/feed route:", error.message);
+    return res.status(400).send(error.message);
   }
 });
 

@@ -7,7 +7,7 @@ const userAuthMiddleware = async (req,res,next) => {
     const cookies = req.cookies;
     const { token } = cookies;
     if (!token) {
-      throw new Error("Unauthorized: No token provided");
+      return res.status(401).send({error: "Authentication token not found"});
     }
     const decodedData = await jwt.verify(token, "DEVgram#123");
     const { id } = decodedData;
@@ -18,7 +18,7 @@ const userAuthMiddleware = async (req,res,next) => {
     req.user = userDetails;
     next();
   } catch (error) {
-    res.status(401).send({error: error.message});
+    return res.status(401).send({error: error.message});
   }
 };
 
