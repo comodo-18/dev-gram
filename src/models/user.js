@@ -43,12 +43,10 @@ const userSchema = new Schema(
     },
     age: {
       type: Number,
-      required: true,
       min: 18,
     },
     gender: {
       type: String,
-      required: true,
       lowercase: true,
       validate: function (value) {
         if (!["male", "female", "others"].includes(value)) {
@@ -58,7 +56,7 @@ const userSchema = new Schema(
     },
     profilePicture: {
       type: String,
-      default: "https://example.com/default-profile-pic.jpg",
+      default: "https://media.istockphoto.com/id/1341046662/vector/picture-profile-icon-human-or-people-sign-and-symbol-for-template-design.jpg?s=612x612&w=0&k=20&c=A7z3OK0fElK3tFntKObma-3a7PyO8_2xxW0jtmjzT78=",
     },
     bio: {
       type: String,

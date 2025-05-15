@@ -17,13 +17,6 @@ const validateSignUpDetails = (req) => {
   ) {
     errors.push("Password is required and must be at least 6 characters long.");
   }
-  if (!age || typeof age !== "number" || age < 18) {
-    errors.push("Age is required and must be at least 18.");
-  }
-  console.log("Validating gender:", gender); // Debug log
-  if (!gender || !["male", "female", "others"].includes(gender)) {
-    errors.push("Gender is required and must be 'male', 'female', or 'others'.");
-  }
   if (errors.length > 0) {
     throw new Error(errors.join(" "));
   }

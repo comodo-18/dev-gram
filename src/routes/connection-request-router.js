@@ -59,7 +59,7 @@ connectionRequestRouter.post(
         return res.status(400).send("Invalid status value");
       }
       const data = await ConnectionRequest.findOne({
-        _id: reviewId,
+        senderId: reviewId,
         receiverId: userId,
         status: "interested",
       });
