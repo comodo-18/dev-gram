@@ -7,7 +7,8 @@ const profileRouter = require("./routes/profile-router");
 const connectionRequestRouter = require("./routes/connection-request-router");
 const userRouter = require("./routes/user-router");
 const cors = require("cors");
-const PORT = 7777;
+require('dotenv').config()
+const PORT = process.env.PORT || 7777;
 
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());

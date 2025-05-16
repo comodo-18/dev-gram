@@ -85,7 +85,7 @@ userSchema.pre("save", async function (next) {
 
 userSchema.methods.getJwtToken = async function () {
   const user = this;
-  const token = await jwt.sign({ id: user._id }, "DEVgram#123", {
+  const token = await jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
     expiresIn: "7d",
   });
   return token;

@@ -9,7 +9,7 @@ const userAuthMiddleware = async (req,res,next) => {
     if (!token) {
       return res.status(401).send({error: "Authentication token not found"});
     }
-    const decodedData = await jwt.verify(token, "DEVgram#123");
+    const decodedData = await jwt.verify(token, process.env.JWT_SECRET_KEY);
     const { id } = decodedData;
     const userDetails = await User.findById(id);
     if (!userDetails) {
